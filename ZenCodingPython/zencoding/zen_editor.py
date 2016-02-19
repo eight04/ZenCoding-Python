@@ -24,24 +24,24 @@ import zencoding
 import zencoding.utils
 
 class ScintillaStr():
-	"""Class to emulate a string efficiently 
+	"""Class to emulate a string efficiently
 	in Scintilla.  Zen Coding uses get_content() a lot,
-	when actually it only needs a small section of the 
+	when actually it only needs a small section of the
 	content, so we emulate the slicing in this class.
 	If a real string is requested, we return getText()
-	In PythonScript 0.9.2.0 onwards, this could be 
+	In PythonScript 0.9.2.0 onwards, this could be
 	getCharacterPointer()
 	"""
-	
+
 	def __init__(self):
 		self._editor = Npp.editor
-		
+
 	def __str__(self):
 		return self._editor.getText()
 
 	def __repr__(self):
 		return self._editor.getText()
-		
+
 	def __getitem__(self, i):
 		if i.__class__.__name__ == 'slice':
 			stop = i.stop
@@ -51,7 +51,7 @@ class ScintillaStr():
 		else:
 			ch = self._editor.getCharAt(i)
 			return ch >= 0 and chr(ch) or chr(ch + 256)
-		
+
 	def __setitem__(self, i, c):
 		if i.__class__.__name__ == 'slice':
 			start, stop = (i.start, i.stop)
@@ -59,23 +59,23 @@ class ScintillaStr():
 			start, stop = i, i
 		if stop > self._editor.getLength():
 			stop = self._editor.getLength()
-		
+
 		self._editor.setTarget(start, stop)
 		self._editor.replaceTarget(c)
-		
-		
+
+
 	def __len__(self):
 		return self._editor.getLength()
-	
+
 	def find(self, search, start=0):
 		found = self._editor.findText(0, start, self._editor.getLength(), search)
 		if found:
 			return found[0]
 		else:
 			return -1
-			
+
 class ZenEditor():
-	def __init__(self):
+	def __init__(self, profile_name):
 
 		self._editor = Npp.editor
 		self._notepad = Npp.notepad
@@ -84,7 +84,8 @@ class ZenEditor():
 		                    Npp.LANGTYPE.CSS  : 'css',
 					        Npp.LANGTYPE.XML  : 'xml'
 					      }
-					   
+		self.profile_name = profile_name
+
 	def set_context(self, context):
 		"""
 		Setup underlying editor context. You should call this method
@@ -135,7 +136,7 @@ class ZenEditor():
 
 	def get_line_from_position(self, index):
 		"""
-		Returns the line contents from the file offset 
+		Returns the line contents from the file offset
 		provided by index
 		@return: string of the line
 		@example
@@ -143,11 +144,11 @@ class ZenEditor():
 		print(linecontent)
 		"""
 		return self._editor.getLine(self._editor.lineFromPosition(index))
-		
+
 	def char_at(self, index):
 		ch = self._editor.getCharAt(index)
 		return ch >= 0 and chr(ch) or chr(ch + 256)
-		
+
 	def get_caret_pos(self):
 		""" Returns current caret position """
 		return self._editor.getCurrentPos()
@@ -189,28 +190,28 @@ class ZenEditor():
 		@param end: End index of editor's content
 		@type end: int
 		"""
-		
+
 		caret_placeholder = zencoding.utils.get_caret_placeholder()
 		realStart = start
 		caret_pos = -1
 		if realStart is None:
 			realStart = 0
-		
+
 		line_padding = self.padding_re.search(self._editor.getCurLine())
 		if line_padding  and not no_indent:
 			line_padding = line_padding.group(1)
 			value = zencoding.utils.pad_string(value, line_padding)
-		
-		
+
+
 		new_pos = value.find(caret_placeholder)
 		if new_pos != -1:
 			caret_pos = realStart + new_pos
 			value = value.replace(caret_placeholder, '')
 		else:
 			caret_pos = realStart + len(value)
-			
 
-			
+
+
 		if start is None:
 		    self._editor.setText(value)
 		else:
@@ -222,8 +223,8 @@ class ZenEditor():
 
 		if caret_pos != -1:
 			self._editor.gotoPos(caret_pos)
-		
-	
+
+
 
 	def get_content(self):
 		"""
@@ -237,25 +238,28 @@ class ZenEditor():
 		Returns current editor's syntax mode
 		@return: str
 		"""
-		
+
 		syntax = self.syntax_map.get(self._notepad.getLangType(), 'html')
-		
+
 		# Same language used for XML/XSL/XSD
 		if syntax == 'xml':
 			if self._notepad.getCurrentFilename()[-4:].lower() == '.xsl':
 				syntax = 'xsl'
 			elif self._notepad.getCurrentFilename()[-4:].lower() == '.xsd':
 				syntax = 'xsd'
-				
+
 		return syntax
-		
+
 	def get_profile_name(self):
 		"""
 		Returns current output profile name (@see zen_coding#setup_profile)
 		@return {String}
 		"""
-		return 'xhtml'
-   
+		return self.profile_name
+
+	def set_profile_name(self, profile_name):
+		self.profile_name = profile_name
+
 	def prompt(self, title):
 		"""
 		Ask user to enter something
@@ -266,7 +270,7 @@ class ZenEditor():
 		"""
 		return self._editor.prompt(title, "Zen Coding - Python")
 
-   
+
 	def get_selection(self):
 		"""
 		Returns current selection
@@ -274,7 +278,7 @@ class ZenEditor():
 		@since: 0.65
 		"""
 		return self._editor.getSelText()
-   
+
 	def get_file_path(self):
 		"""
 		Returns current editor's file path
@@ -282,12 +286,12 @@ class ZenEditor():
 		@since: 0.65
 		"""
 		return self._notepad.getCurrentFilename()
-	
+
 	def add_placeholders(self, text):
 		_ix = [1000]
-		
+
 		def get_ix(m):
 			_ix[0] += 1
 			return '${%s}' % _ix[0]
-		
+
 		return re.sub(zencoding.utils.get_caret_placeholder(), get_ix, text)
