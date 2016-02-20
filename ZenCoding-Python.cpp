@@ -321,21 +321,25 @@ void doProfileAutoSelect()
 void doProfileXhtml()
 {
 	setProfile(_T("xhtml"), g_fiProfileXhtml);
+	saveSettings();
 }
 
 void doProfileHtml()
 {
 	setProfile(_T("html"), g_fiProfileHtml);
+	saveSettings();
 }
 
 void doProfileXml()
 {
 	setProfile(_T("xml"), g_fiProfileXml);
+	saveSettings();
 }
 
 void doProfilePlain()
 {
 	setProfile(_T("plain"), g_fiProfilePlain);
+	saveSettings();
 }
 
 
@@ -472,6 +476,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 
 					case L_HTML:
 					default:
+						// Auto selection doesn't work properly since NPP doesn't use HTML or XHTML type.
 						setProfile(_T("xhtml"), g_fiProfileXhtml);
 						break;
 				}
