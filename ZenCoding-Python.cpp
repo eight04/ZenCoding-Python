@@ -265,19 +265,19 @@ void doAbout()
 void setProfile(const TCHAR *profileName)
 {
 	int profileIndex = -1;
-	if (_tcscmp(profileName, _T("xhtml")))
+	if (!_tcscmp(profileName, _T("xhtml")))
 	{
 		profileIndex = g_fiProfileXhtml;
 	}
-	else if (_tcscmp(profileName, _T("xml")))
+	else if (!_tcscmp(profileName, _T("xml")))
 	{
 		profileIndex = g_fiProfileXml;
 	}
-	else if (_tcscmp(profileName, _T("html")))
+	else if (!_tcscmp(profileName, _T("html")))
 	{
 		profileIndex = g_fiProfileHtml;
 	}
-	else if (_tcscmp(profileName, _T("plain")))
+	else if (!_tcscmp(profileName, _T("plain")))
 	{
 		profileIndex = g_fiProfilePlain;
 	}
