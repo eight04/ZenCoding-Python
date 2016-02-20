@@ -68,11 +68,11 @@ void initialise()
 {
 	TCHAR configPath[MAX_PATH];
 	::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(configPath));
-	
+
 	tstring my_zen_settings(configPath);
 	my_zen_settings.append(_T("\\ZenCodingPython\\zencoding\\my_zen_settings.py"));
 
-		
+
 	if (!::PathFileExists(my_zen_settings.c_str()))
 	{
 		std::ofstream mySettingsFile(my_zen_settings.c_str());
@@ -111,7 +111,7 @@ void initialise()
 		setProfile(_T("plain"), g_fiProfilePlain);
 	}
 
-	
+
 
 }
 
@@ -128,7 +128,7 @@ void doExpandAbbreviation()
 	}
 }
 
-	
+
 
 void doWrapWithAbbreviation()
 {
@@ -290,14 +290,14 @@ void setProfile(const TCHAR *profileName)
 
 void setProfile(const TCHAR *profileName, int cmdIndex)
 {
-	
+
 	if (-1 != g_currentProfileIndex)
 	{
 		::SendMessage(nppData._nppHandle, NPPM_SETMENUITEMCHECK, funcItem[g_currentProfileIndex]._cmdID, FALSE);
 	}
-	
+
 	::SendMessage(nppData._nppHandle, NPPM_SETMENUITEMCHECK, funcItem[cmdIndex]._cmdID, TRUE);
-	
+
 	if (g_initialised)
 	{
 		TCHAR cmd[150];
@@ -351,7 +351,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		
+
 		break;
 
 	case DLL_THREAD_ATTACH:
@@ -367,7 +367,7 @@ extern "C" __declspec(dllexport) void setInfo(NppData notepadPlusData)
 {
 	nppData = notepadPlusData;
 	aboutDlg.init(static_cast<HINSTANCE>(g_hModule), nppData);
-	
+
 	::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(g_iniPath));
 	_tcscat_s(g_iniPath, MAX_PATH, _T("\\ZenCodingPython.ini"));
 }
@@ -381,7 +381,7 @@ extern "C" __declspec(dllexport) CONST TCHAR * getName()
 
 extern "C" __declspec(dllexport) FuncItem * getFuncsArray(int *nbF)
 {
-	
+
 
 
 
@@ -424,7 +424,7 @@ extern "C" __declspec(dllexport) FuncItem * getFuncsArray(int *nbF)
 	g_fiProfilePlain = g_funcItemManager->addFunction(_T("Profile: plain"), doProfilePlain);
 	g_funcItemManager->addSplitter(); // ----------------------
 	g_funcItemManager->addFunction(_T("About"), doAbout);
-	
+
 	funcItem = g_funcItemManager->getFuncItems(nbF);
 	return funcItem;
 }
@@ -441,7 +441,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 			{
 				ShortcutKey key;
 				::SendMessage(nppData._nppHandle, NPPM_GETSHORTCUTBYCMDID, funcItem[0]._cmdID, reinterpret_cast<LPARAM>(&key));
-				g_expandIsTab = keyIsTab(key);	
+				g_expandIsTab = keyIsTab(key);
 				loadSettings();
 				// Lazy initialisation, so don't call initialise() yet
 				//initialise();
@@ -498,7 +498,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 			break;
 	}
 
-	
+
 }
 
 extern "C" __declspec(dllexport) LRESULT messageProc(UINT message, WPARAM wParam , LPARAM lParam)
@@ -535,14 +535,14 @@ void runString(const TCHAR *script, int messageType /* = PYSCR_EXECSTATEMENT */)
 	pse.deliverySuccess = FALSE;
 	pse.flags = 0;
 	pse.script = script;
-	
-	
+
+
 
 	TCHAR pluginName[] = _T("PythonScript.dll");
 	CommunicationInfo commInfo;
 	commInfo.internalMsg = messageType;
 	commInfo.srcModuleName = PLUGIN_NAME;
-	
+
 	commInfo.info = reinterpret_cast<void*>(&pse);
 	// SendMessage(nppData._nppHandle, NPPM_MSGTOPLUGIN, reinterpret_cast<WPARAM>(pluginName), reinterpret_cast<LPARAM>(&commInfo));
 
@@ -551,7 +551,7 @@ void runString(const TCHAR *script, int messageType /* = PYSCR_EXECSTATEMENT */)
 	{
 		MessageBox(NULL, _T("Python Script Plugin not found.  Please install the Python Script plugin from Plugin Manager"), _T("Zen Coding - Python"), 0);
 		g_pythonFailure = true;
-	}	
+	}
 	else if (!pse.deliverySuccess)
 	{
 		MessageBox(NULL, _T("Python Script Plugin did not accept the script"), _T("Zen Coding - Python"), 0);
@@ -581,15 +581,16 @@ void saveSettings()
 
 void loadSettings()
 {
+	// Auto select profile
 	int result = ::GetPrivateProfileInt(_T("Settings"), _T("AutoProfile"), 1, g_iniPath);
 	g_autoSelectProfile = (result == 1);
-	if (!g_autoSelectProfile)
-	{
-		TCHAR tmp[20];
-		::GetPrivateProfileString(_T("Settings"), _T("CurrentProfile"), _T("xhtml"), tmp, 20, g_iniPath);
-		g_currentProfile = tmp;
-		setProfile(g_currentProfile.c_str());
-	}
+
+	// Current profile
+	TCHAR tmp[20];
+	::GetPrivateProfileString(_T("Settings"), _T("CurrentProfile"), _T("xhtml"), tmp, 20, g_iniPath);
+	g_currentProfile = tmp;
+	setProfile(g_currentProfile.c_str());
+
 	::SendMessage(nppData._nppHandle, NPPM_SETMENUITEMCHECK, funcItem[g_fiAutoProfile]._cmdID, g_autoSelectProfile ? TRUE : FALSE);
 
 }
