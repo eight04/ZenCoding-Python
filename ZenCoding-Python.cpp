@@ -12,10 +12,10 @@
 
 #define CHECK_INITIALISED()  if (!g_initialised){ initialise(); }
 
-struct SCNotification
-{
-	NMHDR nmhdr;
-};
+// struct SCNotification
+// {
+	// NMHDR nmhdr;
+// };
 
 
 /* Info for Notepad++ */

@@ -15,22 +15,22 @@ void AboutDialog::doDialog()
 {
 	if (!isCreated())
 		create(IDD_ABOUTDLG);
-	
+
 	goToCenter();
 }
 
 
-BOOL CALLBACK AboutDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM /* lParam */)
+BOOL CALLBACK AboutDialog::run_dlgProc(UINT Message, WPARAM wParam, LPARAM /* lParam */)
 {
-	switch (Message) 
+	switch (Message)
 	{
 		case WM_INITDIALOG :
 		{
 			return TRUE;
 		}
-		
 
-		case WM_COMMAND : 
+
+		case WM_COMMAND :
 		{
 				switch (wParam)
 				{
@@ -42,7 +42,7 @@ BOOL CALLBACK AboutDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, L
 					default :
 						break;
 				}
-			
+
 		}
 	}
 	return FALSE;

@@ -15,10 +15,10 @@
 
 #include <tchar.h>
 #include <Shlwapi.h>
-#include <Notepad_plus_msgs.h>
-#include <PluginInterface.h>
-#include <PythonScript\NppPythonScript.h>
-#include <keys.h>
+#include "Notepad_plus_msgs.h"
+#include "PluginInterface.h"
+#include "NppPythonScript.h"
+#include "keys.h"
 #include <string>
 #include <fstream>
 #include <list>

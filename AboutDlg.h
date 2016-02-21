@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include <StaticDialog.h>
+#include "StaticDialog.h"
 
 class AboutDialog : public StaticDialog
 {
 public:
 	AboutDialog(void);
 	~AboutDialog(void);
-	
+
 	void init(HINSTANCE hInst, NppData nppData)
 	{
 		_nppData = nppData;
@@ -14,8 +14,8 @@ public:
 	};
 
 	void doDialog();
-	BOOL CALLBACK AboutDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	BOOL CALLBACK AboutDialog::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lParam);
 
-private:	
+private:
 	NppData _nppData;
 };
